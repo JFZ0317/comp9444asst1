@@ -55,6 +55,7 @@ def test(args, model, device, test_loader):
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
+    return 100. * correct / len(test_loader.dataset)
 
 def main():
     # command-line arguments
@@ -95,11 +96,25 @@ def main():
     if list(net.parameters()):
         # use SGD optimizer
         optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=args.mom)
-
-        # training and testing loop
-        for epoch in range(1, args.epochs + 1):
-            train(args, net, device, train_loader, optimizer, epoch)
-            test(args, net, device, test_loader)
+        if args.net == 'full':
+            # for i in range(130,2000+1,10):
+            #     print("hidden_size =",i)
+            #     net = NetFull(hidden_size=i).to(device)
+            #     optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=args.mom)
+            #     for epoch in range(1, args.epochs + 1):
+            #         train(args, net, device, train_loader, optimizer, epoch)
+            #         acc = test(args, net, device, test_loader)
+            #     if acc >= 88:
+            #         print("when hidden_size =",i,"accuracy >= 84")
+            #         break
+            for epoch in range(1, args.epochs + 1):
+                train(args, net, device, train_loader, optimizer, epoch)
+                test(args, net, device, test_loader)
+        else:
+            # training and testing loop
+            for epoch in range(1, args.epochs + 1):
+                train(args, net, device, train_loader, optimizer, epoch)
+                test(args, net, device, test_loader)
         
 if __name__ == '__main__':
     main()

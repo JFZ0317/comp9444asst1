@@ -85,7 +85,7 @@ parser.add_argument('--hid', type=int,default='4', help='number of hidden units'
 parser.add_argument('--act', type=str, default='sig', help='sig or step')
 parser.add_argument('--init', type=float,default=0.15, help='initial weight size')
 parser.add_argument('--set_weights', default=False, action='store_true')
-parser.add_argument('--lr', type=float,default=0.001, help='learning rate')
+parser.add_argument('--lr', type=float,default=0.01, help='learning rate')
 parser.add_argument('--epoch', type=int,default='200000', help='max training epochs')
 args = parser.parse_args()
 

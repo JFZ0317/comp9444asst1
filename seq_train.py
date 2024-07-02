@@ -83,10 +83,13 @@ for epoch in range((args.epoch*1000)+1):
     label  = seq[1:]
 
     net.init_hidden()
-    hidden, output = net(input)
+    if args.model == 'lstm':
+        hidden, output, context = net(input)
+    else:
+        hidden, output = net(input)
     log_prob = F.log_softmax(output, dim=2)
     prob_out = torch.exp(log_prob)
-    loss = F.nll_loss(log_prob.squeeze(), label.squeeze())
+    loss = F.nll_loss(log_prob.squeeze(), label.squeeze().long())
     loss.backward()
     optimizer.step()
 
@@ -100,11 +103,16 @@ for epoch in range((args.epoch*1000)+1):
             label = seq[1:]
             
             net.init_hidden()
-            hidden, output = net(input)
+            if args.model == 'lstm':
+                hidden, output, context = net(input)
+            else:
+                hidden, output = net(input)
             log_prob = F.log_softmax(output, dim=2)
             prob_out = torch.exp(log_prob)
-            
-            lang.print_outputs(epoch, seq, state, hidden, target, output)
+            if args.model == 'lstm':
+                lang.print_outputs1(epoch, seq, state, hidden, target, output,context)
+            else:
+                lang.print_outputs(epoch, seq, state, hidden, target, output)
             sys.stdout.flush()
 
             net.train()

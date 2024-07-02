@@ -97,16 +97,16 @@ def main():
         # use SGD optimizer
         optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=args.mom)
         if args.net == 'full':
-            # for i in range(130,2000+1,10):
-            #     print("hidden_size =",i)
-            #     net = NetFull(hidden_size=i).to(device)
-            #     optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=args.mom)
-            #     for epoch in range(1, args.epochs + 1):
-            #         train(args, net, device, train_loader, optimizer, epoch)
-            #         acc = test(args, net, device, test_loader)
-            #     if acc >= 88:
-            #         print("when hidden_size =",i,"accuracy >= 84")
-            #         break
+            for i in range(10,2000+1,10):
+                print("hidden_size =",i)
+                net = NetFull(hidden_size=i).to(device)
+                optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=args.mom)
+                for epoch in range(1, args.epochs + 1):
+                    train(args, net, device, train_loader, optimizer, epoch)
+                    acc = test(args, net, device, test_loader)
+                if acc >= 84:
+                    print("when hidden_size =",i,"accuracy >= 84")
+                    break
             for epoch in range(1, args.epochs + 1):
                 train(args, net, device, train_loader, optimizer, epoch)
                 test(args, net, device, test_loader)

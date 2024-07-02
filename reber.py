@@ -73,7 +73,7 @@ class lang_reber:
             seq_raw, prob, state = self.get_one_example(self.min_length)
 
         # convert numpy array to torch tensor
-        seq = torch.from_numpy(np.asarray(seq_raw)).long()
+        seq = torch.tensor(seq_raw, dtype=torch.long)
         input = F.one_hot(seq[0:-1],num_classes=7).float()
         target = torch.from_numpy(np.asarray(prob)).float()
         input = input.unsqueeze(0)
@@ -115,3 +115,40 @@ class lang_reber:
         else:
             print('error: %1.4f' %torch.mean((prob_out - target)
                                             *(prob_out - target)))
+
+    def print_outputs1(self, epoch, seq, state, hidden, target, output, context):
+        log_prob = F.log_softmax(output, dim=2)
+        prob_out = torch.exp(log_prob)
+        hidden_np = hidden.squeeze().numpy()
+        context_np = context.squeeze().numpy()
+        target_np = target.squeeze().numpy()
+        prob_out_np = prob_out.squeeze().numpy()
+        print('-----')
+        symbol = [self.chars[index] for index in seq.squeeze().tolist()]
+        if self.embed:
+            print('state = ', *state, sep=' ')
+        else:
+            print('state = ', *state, sep='')
+        print('symbol= ' + ''.join(symbol))
+        print('label = ', *(seq.squeeze().tolist()), sep='')
+        print('true probabilities:')
+        print('     B    T    S    X    P    V    E')
+        for k in range(len(state) - 1):
+            print(state[k + 1], target_np[k, :])
+        print('hidden activations,context units and output probabilities [BTSXPVE]:')
+        for k in range(len(state) - 1):
+            print(state[k + 1], hidden_np[k, :], context_np[k, :], prob_out_np[k, :])
+        # print(prob_out.squeeze().numpy())
+        print('epoch: %d' % epoch)
+        if self.embed:
+            prob_out_mid = prob_out[:, 2:-3, :]
+            prob_out_final = prob_out[:, -2, :]
+            target_mid = target[:, 2:-3, :]
+            target_final = target[:, -2, :]
+            print('error: %1.4f' % torch.mean((prob_out_mid - target_mid)
+                                              * (prob_out_mid - target_mid)))
+            print('final: %1.4f' % torch.mean((prob_out_final - target_final)
+                                              * (prob_out_final - target_final)))
+        else:
+            print('error: %1.4f' % torch.mean((prob_out - target)
+                                              * (prob_out - target)))

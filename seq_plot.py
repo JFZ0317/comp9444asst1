@@ -89,10 +89,12 @@ with torch.no_grad():
         sys.stdout.flush()
 
     all_hidden = torch.cat(all_hid,dim=0)
+    # print(all_state)
     for k in range(args.hid):
         for j in range(k):
             if args.model == 'srn':
-                plt.plot(net.H0.data[j],net.H0.data[k],'kx') 
+                plt.plot(net.H0.data[j],net.H0.data[k],'kx')
+
             plt.scatter(all_hidden[:,j],all_hidden[:,k], c=all_state,
                 cmap='jet', vmin=0, vmax=max_state)
             plt.savefig('./plot/%s_%s%d_%d%d.jpg' %(args.lang,args.model,args.hid,j,k))
